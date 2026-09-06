@@ -43,7 +43,7 @@ npm start
 
 ### Docker
 
-已安装并启动 Docker Engine 或 Docker Desktop 时，也可以在项目目录执行：
+需要先启动 Docker Engine 或 Docker Desktop。在 Windows 的 WSL 中运行时，还需在 Docker Desktop 的 Settings → Resources → WSL Integration 中启用当前发行版，确认 `docker info` 能显示 Server 信息后，再在项目目录执行：
 
 ```bash
 docker compose up --build
