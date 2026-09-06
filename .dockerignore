@@ -1,0 +1,22 @@
+# Build from locked source, never host dependency trees or previous output.
+**/node_modules
+**/dist
+**/coverage
+**/.vite
+**/.cache
+**/*.log
+.git
+.github
+.codex
+.agents
+.vscode
+.idea
+# Neither server configuration nor Vite build-time variables enter the image.
+**/.env
+**/.env.*
+docs
+scripts
+README.md
+
+# Locally generated review bundles do not belong to the build context.
+.deliverables

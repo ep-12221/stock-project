@@ -1,0 +1,46 @@
+{
+  "name": "stock-project",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": "^22.14.0 || ^24.0.0",
+    "npm": ">=10"
+  },
+  "packageManager": "npm@10.9.2",
+  "scripts": {
+    "dev": "npm run build:shared && concurrently --kill-others --names server,client \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "npm run dev --workspace @stock/server",
+    "dev:client": "npm run dev --workspace @stock/client",
+    "build:shared": "npm run build --workspace @stock/shared",
+    "build": "npm run build:shared && npm run build --workspace @stock/client && npm run build --workspace @stock/server",
+    "start": "npm run start --workspace @stock/server",
+    "typecheck": "npm run build:shared && npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm run build:shared && vitest run",
+    "test:watch": "npm run build:shared && vitest",
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.0",
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-vue": "6.0.8",
+    "@vue/test-utils": "2.4.6",
+    "concurrently": "^9.2.1",
+    "eslint": "^10.10.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-vue": "^10.10.0",
+    "globals": "^16.5.0",
+    "jsdom": "26.1.0",
+    "prettier": "^3.6.2",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.69.0",
+    "vitest": "^5.0.0"
+  }
+}
