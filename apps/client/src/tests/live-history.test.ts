@@ -1,3 +1,4 @@
+import { useHistoryStore } from '../stores/history.js';
 import type { PersonalTradeDto, PublicTradeDto, OrderDto } from '@stock/shared';
 import { createPinia, disposePinia, setActivePinia } from 'pinia';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
@@ -77,7 +78,7 @@ it('supplements an equal-version quote response with the first trade window', ()
   expect(state.tradeWindowVersion).toBe(-1);
 });
 it('updates passive fills locally and removes orders that no longer match their status filter', async () => {
-  const state = useTradingStore();
+  const state = useHistoryStore();
   fetchMock.mockResolvedValueOnce(page([order('one', 1)]));
   await state.orders.load({ status: 'OPEN' });
   account(2, [{ ...order('one', 1), status: 'PARTIALLY_FILLED', filledQuantity: 50 }]);
@@ -91,7 +92,7 @@ it('updates passive fills locally and removes orders that no longer match their 
   expect(fetchMock).toHaveBeenCalledTimes(2);
 });
 it('merges newly closed orders into loaded filtered records and retains older pages', async () => {
-  const state = useTradingStore();
+  const state = useHistoryStore();
   const closed = { ...order('old', 1), status: 'FILLED' as const, filledQuantity: 100 };
   fetchMock.mockResolvedValueOnce(page([closed]));
   await state.orders.load({ symbol: 'SIM001', status: 'FILLED' });
@@ -100,7 +101,7 @@ it('merges newly closed orders into loaded filtered records and retains older pa
   expect(fetchMock).toHaveBeenCalledTimes(1);
 });
 it('never lets a slow order page overwrite a newer pushed fill', async () => {
-  const state = useTradingStore();
+  const state = useHistoryStore();
   let finish!: (response: Response) => void;
   fetchMock.mockImplementationOnce(
     () =>
@@ -116,7 +117,7 @@ it('never lets a slow order page overwrite a newer pushed fill', async () => {
   expect(state.orders.error).toBeNull();
 });
 it('accepts immutable old trade pages while quote ticks advance the global version', async () => {
-  const state = useTradingStore();
+  const state = useHistoryStore();
   market(10, [trade(3)]);
   fetchMock.mockResolvedValueOnce(page([trade(2), trade(1)], 1));
   await state.marketTrades.load();
@@ -124,7 +125,7 @@ it('accepts immutable old trade pages while quote ticks advance the global versi
   expect(state.marketTrades.error).toBeNull();
 });
 it('preserves earlier loaded trades after a recent window rolls forward without HTTP polling', async () => {
-  const state = useTradingStore();
+  const state = useHistoryStore();
   fetchMock.mockResolvedValueOnce(page([trade(2), trade(1)]));
   await state.personalTrades.load();
   account(2, [], [], [trade(3), trade(2)]);
@@ -133,7 +134,7 @@ it('preserves earlier loaded trades after a recent window rolls forward without 
   expect(fetchMock).toHaveBeenCalledTimes(1);
 });
 it('caches a pre-load window without treating it as a complete HTTP history page', async () => {
-  const state = useTradingStore();
+  const state = useHistoryStore();
   account(2, [], [], [trade(3)]);
   expect(state.personalTrades.loaded).toBe(false);
   fetchMock.mockResolvedValueOnce(page([trade(3), trade(2)], 2, 2));
@@ -143,7 +144,7 @@ it('caches a pre-load window without treating it as a complete HTTP history page
   expect(fetchMock).toHaveBeenCalledTimes(1);
 });
 it('reopens pagination for a truncated disjoint trade window while preserving older loaded records', async () => {
-  const state = useTradingStore();
+  const state = useHistoryStore();
   fetchMock.mockResolvedValueOnce(page([trade(1)]));
   await state.personalTrades.load();
   account(2, [], [], [trade(1)]);
@@ -162,7 +163,7 @@ it('reopens pagination for a truncated disjoint trade window while preserving ol
   expect(state.personalTrades.nextCursor).toBeNull();
 });
 it('repairs a truncated window gap created while an older page is in flight', async () => {
-  const state = useTradingStore();
+  const state = useHistoryStore();
   account(2, [], [], [trade(1)]);
   let finish!: (response: Response) => void;
   fetchMock.mockImplementationOnce(
@@ -184,7 +185,7 @@ it('repairs a truncated window gap created while an older page is in flight', as
   expect(state.personalTrades.nextCursor).toBe(51);
 });
 it('does not keep an old active status when closure falls outside the closed-order window', async () => {
-  const state = useTradingStore();
+  const state = useHistoryStore();
   account(2, [order('ancient', 1)]);
   fetchMock.mockResolvedValueOnce(page([order('ancient', 1)], 2));
   await state.orders.load();
@@ -206,7 +207,7 @@ it('does not keep an old active status when closure falls outside the closed-ord
   expect(state.orders.items.find((x) => x.id === 'ancient')?.status).toBe('FILLED');
 });
 it('does not issue reads for unchanged trade windows on quote-only updates', async () => {
-  const state = useTradingStore();
+  const state = useHistoryStore();
   fetchMock.mockResolvedValueOnce(page([trade(1)]));
   await state.marketTrades.load();
   market(2, [trade(1)]);
@@ -230,8 +231,9 @@ it.each(['connecting', 'syncing', 'reconnecting', 'offline'] as const)(
 );
 it('applies a REST order snapshot while live without extra quote or history reads', async () => {
   const state = useTradingStore();
+  const history = useHistoryStore();
   fetchMock.mockResolvedValueOnce(page([]));
-  await state.orders.load();
+  await history.orders.load();
   const realtime = useRealtimeStore();
   realtime.enabled = true;
   realtime.status = 'live';
@@ -240,7 +242,7 @@ it('applies a REST order snapshot while live without extra quote or history read
   fetchMock.mockClear();
   fetchMock.mockResolvedValueOnce(ok({ order: filled, snapshot: next }));
   expect(await state.submit(input)).toBe(true);
-  expect(state.orders.items[0]?.status).toBe('FILLED');
+  expect(history.orders.items[0]?.status).toBe('FILLED');
   expect(state.notice).toContain('全部成交');
   expect(fetchMock).toHaveBeenCalledTimes(1);
 });
@@ -253,14 +255,14 @@ it('does not clear uncertain POST protection when a confirming-looking push arri
   await state.submit(input);
   account(2, [], [{ ...order(), status: 'FILLED', filledQuantity: 100 }]);
   expect(state.uncertain).toBe(true);
-  expect(state.reviewReady).toBe(false);
-  expect(state.acknowledgeOutcome()).toBe(false);
+  expect(state.canSubmit).toBe(false);
+  expect(state.pendingOrder).not.toBeNull();
   fetchMock.mockImplementation(async (url: string) =>
     url === '/api/me/snapshot' ? ok(snapshot(3)) : page([], 3),
   );
   await state.refresh();
-  expect(state.reviewReady).toBe(false);
-  expect(state.acknowledgeOutcome()).toBe(false);
+  expect(state.canSubmit).toBe(false);
+  expect(state.pendingOrder).not.toBeNull();
   expect(state.uncertain).toBe(true);
   const original = state.pendingOrder;
   fetchMock.mockResolvedValueOnce(ok({ order: order(), snapshot: snapshot(4) }));
@@ -274,8 +276,9 @@ it('uses the live market during an explicit account refresh without redundant hi
   realtime.enabled = true;
   realtime.status = 'live';
   const state = useTradingStore();
+  const history = useHistoryStore();
   fetchMock.mockResolvedValueOnce(page([]));
-  await state.orders.load();
+  await history.orders.load();
   fetchMock.mockClear();
   fetchMock.mockResolvedValueOnce(ok(snapshot(2)));
   await state.refresh();
@@ -284,7 +287,7 @@ it('uses the live market during an explicit account refresh without redundant hi
 });
 
 it('does not roll a newer HTTP order row back when an older account snapshot arrives', async () => {
-  const state = useTradingStore();
+  const state = useHistoryStore();
   fetchMock.mockResolvedValueOnce(
     page([{ ...order('one', 1), status: 'FILLED', filledQuantity: 100 }], 5),
   );
@@ -312,7 +315,7 @@ it('keeps market windows in their own version domain when HTTP quotes are newer'
   expect(state.recentTrades.map((item) => item.sequence)).toEqual([7]);
 });
 it('preserves the current symbol filter as a different stock trades', async () => {
-  const state = useTradingStore();
+  const state = useHistoryStore();
   fetchMock.mockResolvedValueOnce(page([trade(1, 'SIM002')]));
   await state.personalTrades.load({ symbol: 'SIM002' });
   account(2, [], [], [trade(3), trade(2, 'SIM002'), trade(1, 'SIM002')]);
@@ -320,7 +323,7 @@ it('preserves the current symbol filter as a different stock trades', async () =
   expect(fetchMock).toHaveBeenCalledTimes(1);
 });
 it('does not resurrect stale active orders missing from the latest complete active set', async () => {
-  const state = useTradingStore();
+  const state = useHistoryStore();
   account(2, [order('old', 1)]);
   let finish!: (response: Response) => void;
   fetchMock.mockImplementationOnce(
@@ -344,7 +347,7 @@ it('does not resurrect stale active orders missing from the latest complete acti
   expect(state.orders.items).toEqual([]);
 });
 it('does not remove pending pagination when newer pushes arrive during load-more', async () => {
-  const state = useTradingStore();
+  const state = useHistoryStore();
   account(2, [], [], [trade(5)]);
   fetchMock.mockResolvedValueOnce(page([trade(5), trade(4)], 2, 4));
   await state.personalTrades.load();
@@ -364,7 +367,7 @@ it('does not remove pending pagination when newer pushes arrive during load-more
 });
 it('clears live history and its pagination gaps when identity is invalidated', async () => {
   const auth = authenticated();
-  const state = useTradingStore();
+  const state = useHistoryStore();
   fetchMock.mockResolvedValueOnce(page([trade(1)]));
   await state.personalTrades.load();
   account(
@@ -383,7 +386,7 @@ it('clears live history and its pagination gaps when identity is invalidated', a
 it.each(['initial load', 'refresh'] as const)(
   'repairs an ancient closure omitted from a filtered HTTP page during %s',
   async (mode) => {
-    const state = useTradingStore();
+    const state = useHistoryStore();
     const ancient = order('ancient', 100);
     const closed: OrderDto[] = Array.from({ length: 100 }, (_, index) => ({
       ...order('closed-' + (600 - index), 600 - index),
@@ -426,7 +429,7 @@ it('retains the already loaded account window when trading-store recovery initia
   const auth = authenticated();
   const filled: OrderDto = { ...order('one', 1), status: 'FILLED', filledQuantity: 100 };
   auth.account = { ...snapshot(5), recentClosedOrders: [filled] };
-  const state = useTradingStore();
+  const state = useHistoryStore();
   fetchMock.mockResolvedValueOnce(page([order('one', 1)], 4));
   await state.orders.load();
   expect(state.orders.items).toEqual([filled]);

@@ -5,8 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createMemoryHistory, createRouter } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import App from '../App.vue';
+import { useHistoryStore } from '../stores/history.js';
 import { useRealtimeStore } from '../stores/realtime.js';
-import { useTradingStore } from '../stores/trading.js';
 import { useAuthStore } from '../stores/auth.js';
 import { useServiceStore } from '../stores/service.js';
 
@@ -34,7 +34,7 @@ beforeEach(() => {
     recentClosedOrders: [],
     recentTrades: [],
   };
-  vi.spyOn(useTradingStore().orders, 'load').mockResolvedValue();
+  vi.spyOn(useHistoryStore().orders, 'load').mockResolvedValue();
   auth.quotes = [
     {
       symbol: 'TEST001',

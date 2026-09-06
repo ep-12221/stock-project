@@ -196,7 +196,7 @@ function options() {
     samples: 2040,
     warmup: 680,
     rounds: 3,
-    output: 'docs/benchmarks/matching-ab.json',
+    output: '.deliverables/matching-ab.json',
   };
   for (const argument of process.argv.slice(2)) {
     const match = /^--(sizes|samples|warmup|rounds|output)=(.+)$/.exec(argument);
@@ -233,8 +233,7 @@ async function main() {
   const sourcePaths = [
     'scripts/benchmark-matching.mjs',
     'apps/server/src/services/trading.service.ts',
-    'apps/server/src/services/trading-array.service.ts',
-    'apps/server/src/services/trading-tree.service.ts',
+    'apps/server/src/legacy/trading-array.service.ts',
     'apps/server/src/matching/avl-price-tree.ts',
     'apps/server/src/matching/price-tree-book.ts',
     'apps/server/src/matching/order-book.ts',

@@ -1,8 +1,7 @@
 import { STOCKS } from '@stock/shared';
-import { createOrderBook } from '../matching/book-factory.js';
 import { invariant } from '../matching/checked.js';
 import { createTradingService } from '../services/trading.service.js';
-import type { MemoryStore } from './memory-store.js';
+import { createOrderBook, type MemoryStore } from './memory-store.js';
 import { SYSTEM_USER_ID } from './seed.js';
 
 /** Bootstrap only: once per process, before HTTP accepts commands. Never replenish consumed orders. */

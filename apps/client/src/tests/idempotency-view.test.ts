@@ -4,7 +4,7 @@ import { flushPromises, mount } from '@vue/test-utils';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { createMemoryHistory, createRouter } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
-import { useTradingStore } from '../stores/trading.js';
+import { useHistoryStore } from '../stores/history.js';
 import { useRealtimeStore } from '../stores/realtime.js';
 import { useServiceStore } from '../stores/service.js';
 import { authenticated, failure, input, ok, order, snapshot } from './trading-fixture.js';
@@ -21,7 +21,7 @@ beforeEach(() => {
   realtime.enabled = true;
   realtime.status = 'live';
   vi.spyOn(useServiceStore(), 'refresh').mockResolvedValue();
-  vi.spyOn(useTradingStore().orders, 'load').mockResolvedValue();
+  vi.spyOn(useHistoryStore().orders, 'load').mockResolvedValue();
   fetchMock = vi.fn().mockRejectedValue(new TypeError('response lost'));
   vi.stubGlobal('fetch', fetchMock);
 });

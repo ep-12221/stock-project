@@ -11,7 +11,15 @@ import type {
   User,
 } from '../domain/models.js';
 import { seedStore } from './seed.js';
-import { createOrderBook, type MatchingEngine } from '../matching/book-factory.js';
+import { PriceTreeOrderBook } from '../matching/price-tree-book.js';
+
+export type MatchingEngine = 'array' | 'price-tree';
+
+export function createOrderBook(symbol: string, engine: MatchingEngine): OrderBook {
+  if (engine === 'price-tree') return new PriceTreeOrderBook(symbol);
+  if (engine === 'array') return { buyOrderIds: [], sellOrderIds: [] };
+  throw new Error('Unsupported matching engine: ' + String(engine));
+}
 
 export interface MemoryStore {
   readonly matchingEngine: MatchingEngine;

@@ -1,8 +1,7 @@
 import { INITIAL_CASH_CENTS, STOCKS } from '@stock/shared';
 import { expect } from 'vitest';
-import { createMemoryStore, type MemoryStore } from '../store/memory-store.js';
+import { createMemoryStore, type MemoryStore, type MatchingEngine } from '../store/memory-store.js';
 import { createTradingService } from '../services/trading.service.js';
-import type { MatchingEngine } from '../matching/book-factory.js';
 import { PriceTreeOrderBook } from '../matching/price-tree-book.js';
 
 export const SYMBOL = 'SIM001';

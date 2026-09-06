@@ -1,3 +1,4 @@
+import { useHistoryStore } from '../stores/history.js';
 import { createPinia, disposePinia, setActivePinia } from 'pinia';
 import { flushPromises } from '@vue/test-utils';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
@@ -116,9 +117,9 @@ it.each(['network', 'server'])(
     await store.submit(input);
     expect(store.uncertain).toBe(true);
     expect(await store.submit(input)).toBe(false);
-    expect(store.acknowledgeOutcome()).toBe(false);
+    expect(store.pendingOrder).not.toBeNull();
     await store.refresh();
-    expect(store.acknowledgeOutcome()).toBe(false);
+    expect(store.pendingOrder).not.toBeNull();
     expect(store.uncertain).toBe(true);
     expect(fetchMock.mock.calls.filter(([, options]) => options?.method === 'POST')).toHaveLength(
       1,
@@ -134,12 +135,13 @@ it.each(['network', 'server'])(
 it('clears private records and identity on 401', async () => {
   const auth = authenticated();
   const store = useTradingStore();
-  store.orders.items = [order()];
+  const history = useHistoryStore();
+  history.orders.items = [order()];
   fetchMock.mockResolvedValueOnce(failure(401, 'UNAUTHENTICATED', '请先登录'));
   await store.submit(input);
   expect(auth.user).toBeNull();
   expect(auth.account).toBeNull();
-  expect(store.orders.items).toEqual([]);
+  expect(history.orders.items).toEqual([]);
 });
 it('ignores a late order response after identity invalidation', async () => {
   const auth = authenticated();
@@ -193,7 +195,7 @@ it('preserves newer account and market snapshots during identity refresh', async
   expect(auth.quotes[0]?.lastPriceCents).toBe(1500);
 });
 it('paginates after filtering and merges duplicate IDs once', async () => {
-  const store = useTradingStore();
+  const store = useHistoryStore();
   fetchMock.mockResolvedValueOnce(
     ok({
       userId: 'alice',
@@ -220,7 +222,7 @@ it('paginates after filtering and merges duplicate IDs once', async () => {
   expect(store.orders.nextCursor).toBeNull();
 });
 it('ignores a slow page from an earlier filter', async () => {
-  const store = useTradingStore();
+  const store = useHistoryStore();
   let finish!: (r: Response) => void;
   fetchMock.mockImplementationOnce(
     () =>
@@ -254,14 +256,14 @@ it('ignores a slow page from an earlier filter', async () => {
 });
 it('clears identity when a history request returns 401', async () => {
   const auth = authenticated();
-  const store = useTradingStore();
+  const store = useHistoryStore();
   fetchMock.mockResolvedValueOnce(failure(401));
   await store.personalTrades.load();
   expect(auth.user).toBeNull();
 });
 it('discards pages that arrive after logout', async () => {
   const auth = authenticated();
-  const store = useTradingStore();
+  const store = useHistoryStore();
   let finish!: (r: Response) => void;
   fetchMock.mockImplementationOnce(
     () =>
@@ -297,29 +299,31 @@ it('retains successful submission status if subsequent market refresh fails', as
 it('keeps valid history and uncertain-order protection after a failed logout', async () => {
   const auth = authenticated();
   const store = useTradingStore();
+  const history = useHistoryStore();
   fetchMock.mockRejectedValueOnce(new TypeError('lost response'));
   await store.submit(input);
-  store.orders.items = [order()];
-  store.orders.loaded = true;
+  history.orders.items = [order()];
+  history.orders.loaded = true;
   fetchMock.mockResolvedValueOnce(failure(500));
   await expect(auth.logout()).rejects.toThrow();
-  expect(store.orders.items).toEqual([order()]);
+  expect(history.orders.items).toEqual([order()]);
   expect(store.uncertain).toBe(true);
   expect(store.canSubmit).toBe(false);
 });
-it('never lets filtered, successful, or failed history review acknowledge a pending request', async () => {
+it('keeps the pending request locked after filtered, successful, or failed history reads', async () => {
   const store = useTradingStore();
-  await store.orders.load({ status: 'FILLED', symbol: 'SIM002' });
+  const history = useHistoryStore();
+  await history.orders.load({ status: 'FILLED', symbol: 'SIM002' });
   fetchMock.mockRejectedValueOnce(new TypeError('lost response'));
   await store.submit(input);
   await store.refresh();
-  expect(store.reviewReady).toBe(false);
-  expect(store.acknowledgeOutcome()).toBe(false);
-  await store.orders.load({});
-  expect(store.reviewReady).toBe(false);
-  expect(store.acknowledgeOutcome()).toBe(false);
+  expect(store.canSubmit).toBe(false);
+  expect(store.pendingOrder).not.toBeNull();
+  await history.orders.load({});
+  expect(store.canSubmit).toBe(false);
+  expect(store.pendingOrder).not.toBeNull();
   fetchMock.mockRejectedValueOnce(new TypeError('history failed'));
-  await store.orders.load({});
-  expect(store.reviewReady).toBe(false);
-  expect(store.acknowledgeOutcome()).toBe(false);
+  await history.orders.load({});
+  expect(store.canSubmit).toBe(false);
+  expect(store.pendingOrder).not.toBeNull();
 });

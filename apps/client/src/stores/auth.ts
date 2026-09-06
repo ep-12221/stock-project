@@ -5,6 +5,12 @@ import { useMarketStore } from './market.js';
 import { onScopeDispose, ref } from 'vue';
 import { apiRequest, HttpError } from '../services/http.js';
 
+export interface SessionIdentity {
+  userId: string;
+  serverEpoch: string;
+  revision: number;
+}
+
 class IdentityChangedError extends Error {}
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<UserDto | null>(null);
@@ -21,6 +27,30 @@ export const useAuthStore = defineStore('auth', () => {
   let pendingRestore: Promise<void> | null = null;
   let pendingMutation: Promise<void> | null = null;
   let expiryTimer: ReturnType<typeof setTimeout> | undefined;
+
+  /** Capture the session before an async request; a later login must not own its response. */
+  function captureIdentity(): SessionIdentity | null {
+    return user.value && serverEpoch.value
+      ? { userId: user.value.id, serverEpoch: serverEpoch.value, revision: sessionRevision.value }
+      : null;
+  }
+  function isCurrentIdentity(owner: SessionIdentity): boolean {
+    return (
+      user.value?.id === owner.userId &&
+      serverEpoch.value === owner.serverEpoch &&
+      sessionRevision.value === owner.revision
+    );
+  }
+  function assertResponseIdentity(
+    data: { serverEpoch: string; userId?: string },
+    owner: SessionIdentity,
+    privateData: boolean,
+  ) {
+    if (data.serverEpoch !== owner.serverEpoch || (privateData && data.userId !== owner.userId)) {
+      invalidateSession('登录身份或服务状态已变化，请重新登录');
+      throw new Error('登录身份或服务状态已变化，请重新登录');
+    }
+  }
 
   function clearPrivate() {
     clearTimeout(expiryTimer);
@@ -193,6 +223,9 @@ export const useAuthStore = defineStore('auth', () => {
     initialized,
     sessionRevision,
     invalidateSession,
+    captureIdentity,
+    isCurrentIdentity,
+    assertResponseIdentity,
     busy,
     error,
     restoreSession,

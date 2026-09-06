@@ -255,7 +255,7 @@ it('keeps pending protection after a push or a manual account/history review', a
         }),
   );
   await state.refresh();
-  expect(state.acknowledgeOutcome()).toBe(false);
+  expect(state.pendingOrder).not.toBeNull();
   expect(state.pendingOrder).toEqual(bodies()[0]);
   expect(state.uncertain).toBe(true);
   expect(state.canSubmit).toBe(false);

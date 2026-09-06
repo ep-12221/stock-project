@@ -2,19 +2,19 @@
 import type { OrderStatus } from '@stock/shared';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useAuthStore } from '../stores/auth.js';
-import { useTradingStore } from '../stores/trading.js';
+import { useHistoryStore } from '../stores/history.js';
 import { formatMoney, formatTime } from '../utils/money.js';
 const auth = useAuthStore();
-const trading = useTradingStore();
+const history = useHistoryStore();
 const tab = ref<'orders' | 'personal' | 'market'>('orders');
 const symbol = ref('');
 const status = ref<OrderStatus | ''>('');
 const list = computed(() =>
   tab.value === 'orders'
-    ? trading.orders
+    ? history.orders
     : tab.value === 'personal'
-      ? trading.personalTrades
-      : trading.marketTrades,
+      ? history.personalTrades
+      : history.marketTrades,
 );
 const labels: Record<OrderStatus, string> = {
   OPEN: '已挂单',

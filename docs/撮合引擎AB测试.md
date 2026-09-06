@@ -4,14 +4,13 @@
 
 默认撮合引擎改为 `price-tree`。每只股票的买卖两侧各维护一棵 AVL 树，树节点对应一个有挂单的价格；节点内是按服务端 `sequence` 排列的 FIFO 双向链表。订单 ID 映射到链表节点，最优买卖价分别缓存为买树最大键和卖树最小键。同价队列中不会再建一棵树。
 
-| 部分           | 源码                                                                             | 职责                                            |
-| -------------- | -------------------------------------------------------------------------------- | ----------------------------------------------- |
-| 价格索引       | [avl-price-tree.ts](../apps/server/src/matching/avl-price-tree.ts)               | 查找、插入、删除、旋转、最小与最大价格缓存      |
-| 新版订单簿     | [price-tree-book.ts](../apps/server/src/matching/price-tree-book.ts)             | 价档内 FIFO、只读撮合计划、价档更新的准备与提交 |
-| 新版交易服务   | [trading-tree.service.ts](../apps/server/src/services/trading-tree.service.ts)   | 入参、幂等、撮合、冻结、结算与原子提交          |
-| 原数组交易服务 | [trading-array.service.ts](../apps/server/src/services/trading-array.service.ts) | 完整保留原数组实现，作为对照组                  |
-| 统一入口       | [trading.service.ts](../apps/server/src/services/trading.service.ts)             | 根据 store 创建时确定的引擎选择交易服务         |
-| 共享结算       | [settlement.ts](../apps/server/src/matching/settlement.ts)                       | 两版使用相同的冻结、成交结算、资产守恒检查      |
+| 部分           | 源码                                                                           | 职责                                            |
+| -------------- | ------------------------------------------------------------------------------ | ----------------------------------------------- |
+| 价格索引       | [avl-price-tree.ts](../apps/server/src/matching/avl-price-tree.ts)             | 查找、插入、删除、旋转、最小与最大价格缓存      |
+| 新版订单簿     | [price-tree-book.ts](../apps/server/src/matching/price-tree-book.ts)           | 价档内 FIFO、只读撮合计划、价档更新的准备与提交 |
+| 新版交易服务   | [trading.service.ts](../apps/server/src/services/trading.service.ts)           | 入参、幂等、撮合、冻结、结算与原子提交          |
+| 原数组交易服务 | [trading-array.service.ts](../apps/server/src/legacy/trading-array.service.ts) | 完整保留原数组实现，作为对照组                  |
+| 共享结算       | [settlement.ts](../apps/server/src/matching/settlement.ts)                     | 两版使用相同的冻结、成交结算、资产守恒检查      |
 
 旧服务与基线提交 `ed483ca2b223f1ca66ed6a44aff4c12ab40ca262` 中的 `trading.service.ts` 逐字节相同，SHA-256 为 `1a6b5063eb66e07bb127b19005bd5a04e09a294d705169bb37df76c1d46db627`。原 `order-book.ts` 也保持不变。
 
@@ -89,11 +88,11 @@ npm run test:matching:ab
 ```bash
 npm run bench:matching
 
-# 写入另一个文件，保留本次已提交的测量记录
+# 指定另一份本地结果文件
 npm run bench:matching -- --sizes=100,1000,4000 --samples=2040 --warmup=680 --rounds=3 --output=.deliverables/matching-ab-local.json
 ```
 
-默认原始结果写入 [benchmarks/matching-ab.json](benchmarks/matching-ab.json)，包含环境、基线提交、实现源码 SHA-256、每轮指标、输入与交易状态摘要。复测时应暂停其他重负载任务，并使用同一环境比较两版。
+默认复测结果写入 `.deliverables/matching-ab.json`，包含环境、基线提交、实现源码 SHA-256、每轮指标、输入与交易状态摘要。下面这次完整测量的原始文件保留为 [benchmarks/matching-ab.json](benchmarks/matching-ab.json)，复测不会自动覆盖它。复测时应暂停其他重负载任务，并使用同一环境比较两版。
 
 ## 本次实测结果
 
@@ -124,3 +123,11 @@ npm run bench:matching -- --sizes=100,1000,4000 --samples=2040 --warmup=680 --ro
 ## 生产入口复验
 
 两种引擎分别启动编译后的 `apps/server/dist/index.js`，每次使用全新进程和独立端口：开启系统挂单时运行 `verify-trading.mjs`，关闭时运行 `verify-idempotency.mjs`，四组均通过。覆盖静态页面、真实成交、部分成交、失败无副作用、历史分页、会话隔离及 8 路同请求并发重放；测试进程均正常退出。Compose 配置解析也分别确认了 `array` / `price-tree` 环境变量传递正确。
+
+## Demo 结构重构后的入口
+
+后续重构将正式价格树流程合并到 `services/trading.service.ts`，旧服务逐字节移动到 `legacy/trading-array.service.ts`；`MATCHING_ENGINE` 配置和测试命令保持一致。前端下单与历史查询分别由 `trading.ts`、`history.ts` 管理，会话身份检查由 `auth.ts` 统一提供。
+
+上文 54 次完整性能测量对应提交 `2f52495` 的重构前源码；原始 JSON 中的路径和 SHA-256 记录的是当时版本，不应拿已经移动的路径直接校验当前工作区。历史文件保持不变，新的复测结果按当前入口和源码摘要写到 `.deliverables/`。结构调整本身不作为新的性能提升结论。
+
+重构后使用两档初始深度（100、4,000）、三种场景、两种引擎各执行一轮短跑，共 12 次运行、408 条计时命令。6 组 A/B 的输入和最终交易状态摘要一致；该短跑用于验证新入口和记录脚本，不用于更新上面的性能结论。

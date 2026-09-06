@@ -4,15 +4,10 @@ import { computed, onScopeDispose, ref, watch, type WatchStopHandle } from 'vue'
 import { apiRequest, HttpError } from '../services/http.js';
 import { parseRealtimeEvent } from '../services/realtime-event.js';
 import { useAccountStore } from './account.js';
-import { useAuthStore } from './auth.js';
+import { useAuthStore, type SessionIdentity } from './auth.js';
 import { useMarketStore } from './market.js';
 
 type ConnectionStatus = 'idle' | 'connecting' | 'syncing' | 'live' | 'reconnecting' | 'offline';
-interface Owner {
-  userId: string;
-  serverEpoch: string;
-  revision: number;
-}
 
 export const useRealtimeStore = defineStore('realtime', () => {
   const auth = useAuthStore();
@@ -32,20 +27,12 @@ export const useRealtimeStore = defineStore('realtime', () => {
   let probeTimer: ReturnType<typeof setTimeout> | undefined;
   let probeController: AbortController | undefined;
 
-  function owner(): Owner | null {
-    return !auth.busy && auth.user && auth.serverEpoch
-      ? { userId: auth.user.id, serverEpoch: auth.serverEpoch, revision: auth.sessionRevision }
-      : null;
+  function owner(): SessionIdentity | null {
+    return auth.busy ? null : auth.captureIdentity();
   }
-  function owns(expected: Owner, revision: number): boolean {
-    const actual = owner();
+  function owns(expected: SessionIdentity, revision: number): boolean {
     return (
-      enabled.value &&
-      generation === revision &&
-      actual !== null &&
-      actual.userId === expected.userId &&
-      actual.serverEpoch === expected.serverEpoch &&
-      actual.revision === expected.revision
+      enabled.value && generation === revision && !auth.busy && auth.isCurrentIdentity(expected)
     );
   }
   function releaseSocket() {
@@ -73,10 +60,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
     releaseSocket();
     status.value = 'idle';
   }
-  function invalidate(message: string) {
-    auth.invalidateSession(message);
-  }
-  async function probeIdentity(expected: Owner, revision: number) {
+  async function probeIdentity(expected: SessionIdentity, revision: number) {
     const controller = new AbortController();
     probeController = controller;
     probeTimer = setTimeout(() => controller.abort(), 5000);
@@ -88,7 +72,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
         identity.serverEpoch &&
         (identity.user.id !== expected.userId || identity.serverEpoch !== expected.serverEpoch)
       ) {
-        invalidate('登录身份或服务状态已变化，请重新登录');
+        auth.invalidateSession('登录身份或服务状态已变化，请重新登录');
       }
     } catch (cause) {
       if (
@@ -97,7 +81,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
         cause instanceof HttpError &&
         cause.status === 401
       ) {
-        invalidate('登录已失效，请重新登录');
+        auth.invalidateSession('登录已失效，请重新登录');
       }
     } finally {
       if (probeController === controller) {
@@ -107,7 +91,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
       }
     }
   }
-  function retry(expected: Owner, revision: number, message: string) {
+  function retry(expected: SessionIdentity, revision: number, message: string) {
     if (!owns(expected, revision)) return;
     // Detach handlers before closing, so error + close cannot schedule twice.
     releaseSocket();
@@ -164,7 +148,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
         (account &&
           (account.userId !== expected.userId || account.serverEpoch !== expected.serverEpoch))
       ) {
-        invalidate('登录身份或服务状态已变化，请重新登录');
+        auth.invalidateSession('登录身份或服务状态已变化，请重新登录');
         return;
       }
       // Versions belong to independent domains. Receiving an equal/older first
@@ -196,7 +180,7 @@ export const useRealtimeStore = defineStore('realtime', () => {
     connection.onclose = (event) => {
       if (!active()) return;
       if (event.code === 4401) {
-        invalidate('登录已失效，请重新登录');
+        auth.invalidateSession('登录已失效，请重新登录');
         return;
       }
       retry(expected, revision, '实时连接已断开，正在重连');
