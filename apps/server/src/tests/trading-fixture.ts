@@ -2,12 +2,21 @@ import { INITIAL_CASH_CENTS, STOCKS } from '@stock/shared';
 import { expect } from 'vitest';
 import { createMemoryStore, type MemoryStore } from '../store/memory-store.js';
 import { createTradingService } from '../services/trading.service.js';
+import type { MatchingEngine } from '../matching/book-factory.js';
+import { PriceTreeOrderBook } from '../matching/price-tree-book.js';
 
 export const SYMBOL = 'SIM001';
 export function fixture(
-  options: { maxActiveOrdersPerUser?: number; maxActiveOrders?: number } = {},
+  options: {
+    maxActiveOrdersPerUser?: number;
+    maxActiveOrders?: number;
+    matchingEngine?: MatchingEngine;
+  } = {},
 ) {
-  const store = createMemoryStore({ now: () => 1_700_000_000_000 });
+  const store = createMemoryStore({
+    now: () => 1_700_000_000_000,
+    matchingEngine: options.matchingEngine ?? 'price-tree',
+  });
   for (const id of ['alice', 'bob', 'carol', 'dave']) {
     store.users.set(id, {
       id,
@@ -69,6 +78,7 @@ export function expectInvariants(store: MemoryStore) {
   expect(store.activeOrderCount).toBe(active.length);
   const bookIds: string[] = [];
   for (const [symbol, book] of store.orderBooks) {
+    if (book instanceof PriceTreeOrderBook) book.assertValid((id) => store.orders.get(id)!);
     const buys = book.buyOrderIds.map((id) => store.orders.get(id)!);
     const sells = book.sellOrderIds.map((id) => store.orders.get(id)!);
     for (const [orders, side] of [

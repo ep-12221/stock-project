@@ -1,0 +1,1654 @@
+{
+  "schemaVersion": 1,
+  "startedAt": "2026-09-06T16:58:41.341Z",
+  "finishedAt": "2026-09-06T17:01:30.093Z",
+  "environment": {
+    "platform": "linux",
+    "release": "5.15.153.1-microsoft-standard-WSL2",
+    "cpu": "AMD Ryzen 9 7940H w/ Radeon 780M Graphics",
+    "logicalCpus": 16,
+    "node": "v22.14.0",
+    "v8": "12.4.254.21-node.22"
+  },
+  "baseRevision": "ed483ca2b223f1ca66ed6a44aff4c12ab40ca262",
+  "sourceSha256": {
+    "scripts/benchmark-matching.mjs": "d0af412d3d17f2664f0661816a88cf6a9fbc1bb8074cb86707a44facc7d982f2",
+    "apps/server/src/services/trading.service.ts": "de6dc39d1b5b594f8cabd6c0cc22fc2dff0c97c21a808a24401b7d083dc4b8a8",
+    "apps/server/src/services/trading-array.service.ts": "1a6b5063eb66e07bb127b19005bd5a04e09a294d705169bb37df76c1d46db627",
+    "apps/server/src/services/trading-tree.service.ts": "1ac93f381fdffbb2a9c8f59c55afb287bb8bf6a5f966ca6347e62688e6705ea9",
+    "apps/server/src/matching/avl-price-tree.ts": "66c92b51934c1736e94e4da0f3cafafc9daecfedb92692f131c8e5fa516cdc1b",
+    "apps/server/src/matching/price-tree-book.ts": "63230c207290617b138ef9f20ea0e5595de5b2c3c94e22ab7bcc610cddb258c3",
+    "apps/server/src/matching/order-book.ts": "71a6b719d7a47aea244d71c4888c1457c214d568d6703aef80b59941774bdf1f",
+    "apps/server/src/matching/settlement.ts": "45c1d83dea7e812221bd38c63665f1bcfdbc6e21ce20176b9bb6de07a476aff4",
+    "apps/server/src/matching/checked.ts": "3c66567d5a8f384a0e61dfff0088e61b671ec0da3596d8cbbfc10fef4079f597",
+    "apps/server/src/store/memory-store.ts": "abf55cf2d8fb3a6044f952be4f4998e9af4d08af05d340474206cf6ef8cede7d"
+  },
+  "config": {
+    "sizes": [
+      100,
+      1000,
+      4000
+    ],
+    "samples": 2040,
+    "warmup": 680,
+    "rounds": 3,
+    "output": "docs/benchmarks/matching-ab.json"
+  },
+  "method": "Fresh sequential child per arm/run; alternate AB/BA; independent warmup store; GC before setup and timing, natural GC during timing; public submitOrder including settlement, excluding HTTP/WS; 100 buyers + 100 sellers; increased identical order caps; summary is median of per-run metrics, ratio of median throughputs.",
+  "matchingStateDigests": true,
+  "summary": [
+    {
+      "scenario": "resting-sparse",
+      "depth": 100,
+      "array": {
+        "opsPerSecond": 1802.4090140086357,
+        "p50Us": 500.1280000000179,
+        "p95Us": 995.6740000000082,
+        "p99Us": 1502.1320000000742
+      },
+      "price-tree": {
+        "opsPerSecond": 38952.51716798777,
+        "p50Us": 19.546999999988657,
+        "p95Us": 46.62300000001096,
+        "p99Us": 91.604000000018
+      },
+      "throughputRatio": 21.61136393861884
+    },
+    {
+      "scenario": "resting-sparse",
+      "depth": 1000,
+      "array": {
+        "opsPerSecond": 1042.5546726172524,
+        "p50Us": 931.681000000026,
+        "p95Us": 1485.7849999998507,
+        "p99Us": 2009.5900000001166
+      },
+      "price-tree": {
+        "opsPerSecond": 47042.11299889109,
+        "p50Us": 14.582999999959156,
+        "p95Us": 35.80600000003642,
+        "p99Us": 82.44500000000698
+      },
+      "throughputRatio": 45.12196265045316
+    },
+    {
+      "scenario": "resting-sparse",
+      "depth": 4000,
+      "array": {
+        "opsPerSecond": 346.21743889521105,
+        "p50Us": 2804.1830000001937,
+        "p95Us": 4036.047999999937,
+        "p99Us": 5249.836999999388
+      },
+      "price-tree": {
+        "opsPerSecond": 72563.44490543978,
+        "p50Us": 10.93500000001768,
+        "p95Us": 19.440000000031432,
+        "p99Us": 46.07199999998102
+      },
+      "throughputRatio": 209.58922559473504
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 100,
+      "array": {
+        "opsPerSecond": 11005.981151901204,
+        "p50Us": 75.37899999999809,
+        "p95Us": 133.9760000000183,
+        "p99Us": 227.56199999992077
+      },
+      "price-tree": {
+        "opsPerSecond": 33870.42305154581,
+        "p50Us": 22.10200000001805,
+        "p95Us": 58.63600000003544,
+        "p99Us": 107.63099999996939
+      },
+      "throughputRatio": 3.0774560290515254
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 1000,
+      "array": {
+        "opsPerSecond": 1998.0311029329432,
+        "p50Us": 461.5080000003218,
+        "p95Us": 764.0969999999925,
+        "p99Us": 1141.0969999999452
+      },
+      "price-tree": {
+        "opsPerSecond": 36057.86438813956,
+        "p50Us": 22.245999999995547,
+        "p95Us": 52.48799999998255,
+        "p99Us": 99.67699999998558
+      },
+      "throughputRatio": 18.04669823968687
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 4000,
+      "array": {
+        "opsPerSecond": 477.08328465982714,
+        "p50Us": 2009.1110000012122,
+        "p95Us": 2835.86699999978,
+        "p99Us": 3334.5190000000002
+      },
+      "price-tree": {
+        "opsPerSecond": 25996.766690373406,
+        "p50Us": 35.68699999993896,
+        "p95Us": 74.18299999994815,
+        "p99Us": 117.6820000000589
+      },
+      "throughputRatio": 54.4910449103447
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 100,
+      "array": {
+        "opsPerSecond": 12118.59780195843,
+        "p50Us": 59.49899999995978,
+        "p95Us": 156.55100000003586,
+        "p99Us": 274.7279999999819
+      },
+      "price-tree": {
+        "opsPerSecond": 31251.619550075648,
+        "p50Us": 14.195000000000846,
+        "p95Us": 133.85499999998274,
+        "p99Us": 239.64300000000094
+      },
+      "throughputRatio": 2.578814815112126
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 1000,
+      "array": {
+        "opsPerSecond": 2059.797340477518,
+        "p50Us": 395.02999999990607,
+        "p95Us": 973.8620000000537,
+        "p99Us": 1415.559999999914
+      },
+      "price-tree": {
+        "opsPerSecond": 27457.9993894364,
+        "p50Us": 15.73799999999892,
+        "p95Us": 186.88399999996363,
+        "p99Us": 310.41299999998273
+      },
+      "throughputRatio": 13.33043734441898
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 4000,
+      "array": {
+        "opsPerSecond": 539.1338779682444,
+        "p50Us": 1725.2280000011524,
+        "p95Us": 2495.597999999518,
+        "p99Us": 3183.9810000001307
+      },
+      "price-tree": {
+        "opsPerSecond": 21574.219847920576,
+        "p50Us": 18.940999999927044,
+        "p95Us": 353.2700000000091,
+        "p99Us": 456.68399999999565
+      },
+      "throughputRatio": 40.01644253784275
+    }
+  ],
+  "runs": [
+    {
+      "scenario": "resting-sparse",
+      "depth": 100,
+      "round": 1,
+      "engine": "array",
+      "elapsedMs": 1131.818574,
+      "opsPerSecond": 1802.4090140086357,
+      "latencyUs": {
+        "p50": 507.6339999999391,
+        "p95": 995.4210000000785,
+        "p99": 1502.1320000000742,
+        "max": 2322.0850000000155
+      },
+      "before": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 100
+      },
+      "after": {
+        "activeOrders": 2140,
+        "buyLevels": 2000,
+        "sellLevels": 100
+      },
+      "trades": 0,
+      "inputDigest": "4d302566ce4c6b1a982e83597b4d9498b0697162b58fefcca7eb35a61eb83406",
+      "stateDigest": "f8bc743d7841d3a3220d21bead2c3ff062c83b59dfdc04e70574e174084a03af"
+    },
+    {
+      "scenario": "resting-sparse",
+      "depth": 100,
+      "round": 1,
+      "engine": "price-tree",
+      "elapsedMs": 52.371455000000026,
+      "opsPerSecond": 38952.51716798777,
+      "latencyUs": {
+        "p50": 19.546999999988657,
+        "p95": 48.581000000012864,
+        "p99": 90.33499999998185,
+        "max": 1586.3970000000336
+      },
+      "before": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 100
+      },
+      "after": {
+        "activeOrders": 2140,
+        "buyLevels": 2000,
+        "sellLevels": 100
+      },
+      "trades": 0,
+      "inputDigest": "4d302566ce4c6b1a982e83597b4d9498b0697162b58fefcca7eb35a61eb83406",
+      "stateDigest": "f8bc743d7841d3a3220d21bead2c3ff062c83b59dfdc04e70574e174084a03af"
+    },
+    {
+      "scenario": "resting-sparse",
+      "depth": 100,
+      "round": 2,
+      "engine": "price-tree",
+      "elapsedMs": 53.06025700000001,
+      "opsPerSecond": 38446.85486540331,
+      "latencyUs": {
+        "p50": 20.178999999984626,
+        "p95": 46.62300000001096,
+        "p99": 113.90700000001175,
+        "max": 1360.8029999999758
+      },
+      "before": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 100
+      },
+      "after": {
+        "activeOrders": 2140,
+        "buyLevels": 2000,
+        "sellLevels": 100
+      },
+      "trades": 0,
+      "inputDigest": "4d302566ce4c6b1a982e83597b4d9498b0697162b58fefcca7eb35a61eb83406",
+      "stateDigest": "f8bc743d7841d3a3220d21bead2c3ff062c83b59dfdc04e70574e174084a03af"
+    },
+    {
+      "scenario": "resting-sparse",
+      "depth": 100,
+      "round": 2,
+      "engine": "array",
+      "elapsedMs": 1145.735379,
+      "opsPerSecond": 1780.5158480665195,
+      "latencyUs": {
+        "p50": 500.1280000000179,
+        "p95": 1095.1840000000175,
+        "p99": 1585.1810000001478,
+        "max": 2270.6060000000434
+      },
+      "before": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 100
+      },
+      "after": {
+        "activeOrders": 2140,
+        "buyLevels": 2000,
+        "sellLevels": 100
+      },
+      "trades": 0,
+      "inputDigest": "4d302566ce4c6b1a982e83597b4d9498b0697162b58fefcca7eb35a61eb83406",
+      "stateDigest": "f8bc743d7841d3a3220d21bead2c3ff062c83b59dfdc04e70574e174084a03af"
+    },
+    {
+      "scenario": "resting-sparse",
+      "depth": 100,
+      "round": 3,
+      "engine": "array",
+      "elapsedMs": 1085.805852,
+      "opsPerSecond": 1878.7889163080326,
+      "latencyUs": {
+        "p50": 490.4109999999946,
+        "p95": 995.6740000000082,
+        "p99": 1430.706999999984,
+        "max": 2486.5760000000137
+      },
+      "before": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 100
+      },
+      "after": {
+        "activeOrders": 2140,
+        "buyLevels": 2000,
+        "sellLevels": 100
+      },
+      "trades": 0,
+      "inputDigest": "4d302566ce4c6b1a982e83597b4d9498b0697162b58fefcca7eb35a61eb83406",
+      "stateDigest": "f8bc743d7841d3a3220d21bead2c3ff062c83b59dfdc04e70574e174084a03af"
+    },
+    {
+      "scenario": "resting-sparse",
+      "depth": 100,
+      "round": 3,
+      "engine": "price-tree",
+      "elapsedMs": 47.94161500000001,
+      "opsPerSecond": 42551.758008152196,
+      "latencyUs": {
+        "p50": 18.15500000000725,
+        "p95": 42.68400000000838,
+        "p99": 91.604000000018,
+        "max": 1192.3820000000092
+      },
+      "before": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 100
+      },
+      "after": {
+        "activeOrders": 2140,
+        "buyLevels": 2000,
+        "sellLevels": 100
+      },
+      "trades": 0,
+      "inputDigest": "4d302566ce4c6b1a982e83597b4d9498b0697162b58fefcca7eb35a61eb83406",
+      "stateDigest": "f8bc743d7841d3a3220d21bead2c3ff062c83b59dfdc04e70574e174084a03af"
+    },
+    {
+      "scenario": "resting-sparse",
+      "depth": 1000,
+      "round": 1,
+      "engine": "array",
+      "elapsedMs": 1956.7319140000002,
+      "opsPerSecond": 1042.5546726172524,
+      "latencyUs": {
+        "p50": 933.0620000000636,
+        "p95": 1485.7849999998507,
+        "p99": 2009.5900000001166,
+        "max": 2931.4500000000407
+      },
+      "before": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1000
+      },
+      "after": {
+        "activeOrders": 3040,
+        "buyLevels": 2000,
+        "sellLevels": 1000
+      },
+      "trades": 0,
+      "inputDigest": "41a016496db61d4d4d2578ac05e6a98f741f6006ac900c3a9cfd6897a4fb5d24",
+      "stateDigest": "237a095aeede61476fe0a4bb3fd889ef576544bbd8c519c98668535ac4bfc110"
+    },
+    {
+      "scenario": "resting-sparse",
+      "depth": 1000,
+      "round": 1,
+      "engine": "price-tree",
+      "elapsedMs": 42.439007000000004,
+      "opsPerSecond": 48068.985214474975,
+      "latencyUs": {
+        "p50": 14.582999999959156,
+        "p95": 32.720999999980904,
+        "p99": 82.16499999997495,
+        "max": 2312.706999999989
+      },
+      "before": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1000
+      },
+      "after": {
+        "activeOrders": 3040,
+        "buyLevels": 2000,
+        "sellLevels": 1000
+      },
+      "trades": 0,
+      "inputDigest": "41a016496db61d4d4d2578ac05e6a98f741f6006ac900c3a9cfd6897a4fb5d24",
+      "stateDigest": "237a095aeede61476fe0a4bb3fd889ef576544bbd8c519c98668535ac4bfc110"
+    },
+    {
+      "scenario": "resting-sparse",
+      "depth": 1000,
+      "round": 2,
+      "engine": "price-tree",
+      "elapsedMs": 43.57606500000003,
+      "opsPerSecond": 46814.690587596626,
+      "latencyUs": {
+        "p50": 14.509999999972933,
+        "p95": 35.80600000003642,
+        "p99": 82.44500000000698,
+        "max": 2368.402000000003
+      },
+      "before": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1000
+      },
+      "after": {
+        "activeOrders": 3040,
+        "buyLevels": 2000,
+        "sellLevels": 1000
+      },
+      "trades": 0,
+      "inputDigest": "41a016496db61d4d4d2578ac05e6a98f741f6006ac900c3a9cfd6897a4fb5d24",
+      "stateDigest": "237a095aeede61476fe0a4bb3fd889ef576544bbd8c519c98668535ac4bfc110"
+    },
+    {
+      "scenario": "resting-sparse",
+      "depth": 1000,
+      "round": 2,
+      "engine": "array",
+      "elapsedMs": 1934.0942340000001,
+      "opsPerSecond": 1054.7572936924437,
+      "latencyUs": {
+        "p50": 913.8629999999921,
+        "p95": 1452.1570000001702,
+        "p99": 2042.7819999999883,
+        "max": 3062.5049999998737
+      },
+      "before": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1000
+      },
+      "after": {
+        "activeOrders": 3040,
+        "buyLevels": 2000,
+        "sellLevels": 1000
+      },
+      "trades": 0,
+      "inputDigest": "41a016496db61d4d4d2578ac05e6a98f741f6006ac900c3a9cfd6897a4fb5d24",
+      "stateDigest": "237a095aeede61476fe0a4bb3fd889ef576544bbd8c519c98668535ac4bfc110"
+    },
+    {
+      "scenario": "resting-sparse",
+      "depth": 1000,
+      "round": 3,
+      "engine": "array",
+      "elapsedMs": 1963.7289680000001,
+      "opsPerSecond": 1038.8398975840744,
+      "latencyUs": {
+        "p50": 931.681000000026,
+        "p95": 1531.3060000003134,
+        "p99": 1988.3589999999458,
+        "max": 2693.054999999731
+      },
+      "before": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1000
+      },
+      "after": {
+        "activeOrders": 3040,
+        "buyLevels": 2000,
+        "sellLevels": 1000
+      },
+      "trades": 0,
+      "inputDigest": "41a016496db61d4d4d2578ac05e6a98f741f6006ac900c3a9cfd6897a4fb5d24",
+      "stateDigest": "237a095aeede61476fe0a4bb3fd889ef576544bbd8c519c98668535ac4bfc110"
+    },
+    {
+      "scenario": "resting-sparse",
+      "depth": 1000,
+      "round": 3,
+      "engine": "price-tree",
+      "elapsedMs": 43.365399000000025,
+      "opsPerSecond": 47042.11299889109,
+      "latencyUs": {
+        "p50": 14.590999999995802,
+        "p95": 36.698999999998705,
+        "p99": 94.68599999996741,
+        "max": 1755.9350000000222
+      },
+      "before": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1000
+      },
+      "after": {
+        "activeOrders": 3040,
+        "buyLevels": 2000,
+        "sellLevels": 1000
+      },
+      "trades": 0,
+      "inputDigest": "41a016496db61d4d4d2578ac05e6a98f741f6006ac900c3a9cfd6897a4fb5d24",
+      "stateDigest": "237a095aeede61476fe0a4bb3fd889ef576544bbd8c519c98668535ac4bfc110"
+    },
+    {
+      "scenario": "resting-sparse",
+      "depth": 4000,
+      "round": 1,
+      "engine": "array",
+      "elapsedMs": 6016.420475999999,
+      "opsPerSecond": 339.07204593457675,
+      "latencyUs": {
+        "p50": 2772.6050000001123,
+        "p95": 4233.860999998797,
+        "p99": 5445.772999999463,
+        "max": 8478.170000000318
+      },
+      "before": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 4000
+      },
+      "after": {
+        "activeOrders": 6040,
+        "buyLevels": 2000,
+        "sellLevels": 4000
+      },
+      "trades": 0,
+      "inputDigest": "30d927d369688869eda568a8aa474b361d3de7c8f84ebf4c55ed6f6f7c87ded4",
+      "stateDigest": "5aaf21f3c153861b1fffc8fb9a20121ba644c07e69521f0d5fb895a3ebb8efd2"
+    },
+    {
+      "scenario": "resting-sparse",
+      "depth": 4000,
+      "round": 1,
+      "engine": "price-tree",
+      "elapsedMs": 25.193021999999985,
+      "opsPerSecond": 80974.80326099828,
+      "latencyUs": {
+        "p50": 9.941000000026179,
+        "p95": 15.362999999979365,
+        "p99": 41.943000000003394,
+        "max": 1144.7749999999814
+      },
+      "before": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 4000
+      },
+      "after": {
+        "activeOrders": 6040,
+        "buyLevels": 2000,
+        "sellLevels": 4000
+      },
+      "trades": 0,
+      "inputDigest": "30d927d369688869eda568a8aa474b361d3de7c8f84ebf4c55ed6f6f7c87ded4",
+      "stateDigest": "5aaf21f3c153861b1fffc8fb9a20121ba644c07e69521f0d5fb895a3ebb8efd2"
+    },
+    {
+      "scenario": "resting-sparse",
+      "depth": 4000,
+      "round": 2,
+      "engine": "price-tree",
+      "elapsedMs": 30.362955,
+      "opsPerSecond": 67187.13642990282,
+      "latencyUs": {
+        "p50": 12.472000000002481,
+        "p95": 20.002999999974236,
+        "p99": 46.07199999998102,
+        "max": 994.0760000000068
+      },
+      "before": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 4000
+      },
+      "after": {
+        "activeOrders": 6040,
+        "buyLevels": 2000,
+        "sellLevels": 4000
+      },
+      "trades": 0,
+      "inputDigest": "30d927d369688869eda568a8aa474b361d3de7c8f84ebf4c55ed6f6f7c87ded4",
+      "stateDigest": "5aaf21f3c153861b1fffc8fb9a20121ba644c07e69521f0d5fb895a3ebb8efd2"
+    },
+    {
+      "scenario": "resting-sparse",
+      "depth": 4000,
+      "round": 2,
+      "engine": "array",
+      "elapsedMs": 5825.206866,
+      "opsPerSecond": 350.2021553786996,
+      "latencyUs": {
+        "p50": 2824.727000001076,
+        "p95": 3914.6360000013374,
+        "p99": 4884.727999999086,
+        "max": 9308.186000000205
+      },
+      "before": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 4000
+      },
+      "after": {
+        "activeOrders": 6040,
+        "buyLevels": 2000,
+        "sellLevels": 4000
+      },
+      "trades": 0,
+      "inputDigest": "30d927d369688869eda568a8aa474b361d3de7c8f84ebf4c55ed6f6f7c87ded4",
+      "stateDigest": "5aaf21f3c153861b1fffc8fb9a20121ba644c07e69521f0d5fb895a3ebb8efd2"
+    },
+    {
+      "scenario": "resting-sparse",
+      "depth": 4000,
+      "round": 3,
+      "engine": "array",
+      "elapsedMs": 5892.250854,
+      "opsPerSecond": 346.21743889521105,
+      "latencyUs": {
+        "p50": 2804.1830000001937,
+        "p95": 4036.047999999937,
+        "p99": 5249.836999999388,
+        "max": 9483.92799999965
+      },
+      "before": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 4000
+      },
+      "after": {
+        "activeOrders": 6040,
+        "buyLevels": 2000,
+        "sellLevels": 4000
+      },
+      "trades": 0,
+      "inputDigest": "30d927d369688869eda568a8aa474b361d3de7c8f84ebf4c55ed6f6f7c87ded4",
+      "stateDigest": "5aaf21f3c153861b1fffc8fb9a20121ba644c07e69521f0d5fb895a3ebb8efd2"
+    },
+    {
+      "scenario": "resting-sparse",
+      "depth": 4000,
+      "round": 3,
+      "engine": "price-tree",
+      "elapsedMs": 28.113328999999965,
+      "opsPerSecond": 72563.44490543978,
+      "latencyUs": {
+        "p50": 10.93500000001768,
+        "p95": 19.440000000031432,
+        "p99": 51.14199999997027,
+        "max": 1029.8060000000078
+      },
+      "before": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 4000
+      },
+      "after": {
+        "activeOrders": 6040,
+        "buyLevels": 2000,
+        "sellLevels": 4000
+      },
+      "trades": 0,
+      "inputDigest": "30d927d369688869eda568a8aa474b361d3de7c8f84ebf4c55ed6f6f7c87ded4",
+      "stateDigest": "5aaf21f3c153861b1fffc8fb9a20121ba644c07e69521f0d5fb895a3ebb8efd2"
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 100,
+      "round": 1,
+      "engine": "array",
+      "elapsedMs": 176.91499699999997,
+      "opsPerSecond": 11530.96139158853,
+      "latencyUs": {
+        "p50": 72.591999999986,
+        "p95": 133.9760000000183,
+        "p99": 216.58899999999903,
+        "max": 1699.908999999991
+      },
+      "before": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "after": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "trades": 1020,
+      "inputDigest": "399896cbe287cd590156938c186dd71607d1938d8c33c6f91518a0994094f854",
+      "stateDigest": "dffc795463973736e0523a3e6fd6374f07afe839b2412837383a8be71ce6e7e5"
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 100,
+      "round": 1,
+      "engine": "price-tree",
+      "elapsedMs": 61.281187999999986,
+      "opsPerSecond": 33289.17187440949,
+      "latencyUs": {
+        "p50": 22.10200000001805,
+        "p95": 61.053000000015345,
+        "p99": 123.00099999998793,
+        "max": 1776.1760000000208
+      },
+      "before": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "after": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "trades": 1020,
+      "inputDigest": "399896cbe287cd590156938c186dd71607d1938d8c33c6f91518a0994094f854",
+      "stateDigest": "dffc795463973736e0523a3e6fd6374f07afe839b2412837383a8be71ce6e7e5"
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 100,
+      "round": 2,
+      "engine": "price-tree",
+      "elapsedMs": 60.229539999999986,
+      "opsPerSecond": 33870.42305154581,
+      "latencyUs": {
+        "p50": 22.31299999999692,
+        "p95": 58.63600000003544,
+        "p99": 107.63099999996939,
+        "max": 1628.0780000000163
+      },
+      "before": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "after": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "trades": 1020,
+      "inputDigest": "399896cbe287cd590156938c186dd71607d1938d8c33c6f91518a0994094f854",
+      "stateDigest": "dffc795463973736e0523a3e6fd6374f07afe839b2412837383a8be71ce6e7e5"
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 100,
+      "round": 2,
+      "engine": "array",
+      "elapsedMs": 191.12372699999997,
+      "opsPerSecond": 10673.71399679748,
+      "latencyUs": {
+        "p50": 77.48499999996739,
+        "p95": 147.9400000000055,
+        "p99": 260.34200000003693,
+        "max": 2434.1679999999997
+      },
+      "before": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "after": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "trades": 1020,
+      "inputDigest": "399896cbe287cd590156938c186dd71607d1938d8c33c6f91518a0994094f854",
+      "stateDigest": "dffc795463973736e0523a3e6fd6374f07afe839b2412837383a8be71ce6e7e5"
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 100,
+      "round": 3,
+      "engine": "array",
+      "elapsedMs": 185.35376099999996,
+      "opsPerSecond": 11005.981151901204,
+      "latencyUs": {
+        "p50": 75.37899999999809,
+        "p95": 132.36999999998034,
+        "p99": 227.56199999992077,
+        "max": 2427.587000000017
+      },
+      "before": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "after": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "trades": 1020,
+      "inputDigest": "399896cbe287cd590156938c186dd71607d1938d8c33c6f91518a0994094f854",
+      "stateDigest": "dffc795463973736e0523a3e6fd6374f07afe839b2412837383a8be71ce6e7e5"
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 100,
+      "round": 3,
+      "engine": "price-tree",
+      "elapsedMs": 55.49932700000002,
+      "opsPerSecond": 36757.20247923005,
+      "latencyUs": {
+        "p50": 21.00799999999481,
+        "p95": 51.38700000003382,
+        "p99": 91.02500000000191,
+        "max": 2459.0499999999906
+      },
+      "before": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "after": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "trades": 1020,
+      "inputDigest": "399896cbe287cd590156938c186dd71607d1938d8c33c6f91518a0994094f854",
+      "stateDigest": "dffc795463973736e0523a3e6fd6374f07afe839b2412837383a8be71ce6e7e5"
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 1000,
+      "round": 1,
+      "engine": "array",
+      "elapsedMs": 1069.298079,
+      "opsPerSecond": 1907.7935704399597,
+      "latencyUs": {
+        "p50": 478.16199999988385,
+        "p95": 767.1190000000934,
+        "p99": 1199.5109999998022,
+        "max": 1662.4790000000758
+      },
+      "before": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "after": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "trades": 1020,
+      "inputDigest": "4840a127a9597731f65d20065d516a1a0bf86c81a02343c0258b7dfe7b600ecc",
+      "stateDigest": "cba16af95380bc0c3479b8bc989aa35f161af7d2f43650790b3624f6722f2c5a"
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 1000,
+      "round": 1,
+      "engine": "price-tree",
+      "elapsedMs": 57.66578900000002,
+      "opsPerSecond": 35376.26095777514,
+      "latencyUs": {
+        "p50": 22.511000000008607,
+        "p95": 53.64099999997052,
+        "p99": 99.67699999998558,
+        "max": 2566.5759999999977
+      },
+      "before": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "after": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "trades": 1020,
+      "inputDigest": "4840a127a9597731f65d20065d516a1a0bf86c81a02343c0258b7dfe7b600ecc",
+      "stateDigest": "cba16af95380bc0c3479b8bc989aa35f161af7d2f43650790b3624f6722f2c5a"
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 1000,
+      "round": 2,
+      "engine": "price-tree",
+      "elapsedMs": 56.57573000000002,
+      "opsPerSecond": 36057.86438813956,
+      "latencyUs": {
+        "p50": 22.245999999995547,
+        "p95": 52.48799999998255,
+        "p99": 110.17900000001646,
+        "max": 2035.8909999999923
+      },
+      "before": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "after": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "trades": 1020,
+      "inputDigest": "4840a127a9597731f65d20065d516a1a0bf86c81a02343c0258b7dfe7b600ecc",
+      "stateDigest": "cba16af95380bc0c3479b8bc989aa35f161af7d2f43650790b3624f6722f2c5a"
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 1000,
+      "round": 2,
+      "engine": "array",
+      "elapsedMs": 1016.264803,
+      "opsPerSecond": 2007.350834130974,
+      "latencyUs": {
+        "p50": 454.8979999999574,
+        "p95": 764.0969999999925,
+        "p99": 1106.6419999999653,
+        "max": 1996.8300000000454
+      },
+      "before": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "after": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "trades": 1020,
+      "inputDigest": "4840a127a9597731f65d20065d516a1a0bf86c81a02343c0258b7dfe7b600ecc",
+      "stateDigest": "cba16af95380bc0c3479b8bc989aa35f161af7d2f43650790b3624f6722f2c5a"
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 1000,
+      "round": 3,
+      "engine": "array",
+      "elapsedMs": 1021.0051270000001,
+      "opsPerSecond": 1998.0311029329432,
+      "latencyUs": {
+        "p50": 461.5080000003218,
+        "p95": 722.5100000000566,
+        "p99": 1141.0969999999452,
+        "max": 1563.2140000000163
+      },
+      "before": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "after": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "trades": 1020,
+      "inputDigest": "4840a127a9597731f65d20065d516a1a0bf86c81a02343c0258b7dfe7b600ecc",
+      "stateDigest": "cba16af95380bc0c3479b8bc989aa35f161af7d2f43650790b3624f6722f2c5a"
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 1000,
+      "round": 3,
+      "engine": "price-tree",
+      "elapsedMs": 52.228620999999976,
+      "opsPerSecond": 39059.043890896544,
+      "latencyUs": {
+        "p50": 21.344999999996617,
+        "p95": 46.76799999998593,
+        "p99": 94.55600000001141,
+        "max": 1664.1740000000027
+      },
+      "before": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "after": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "trades": 1020,
+      "inputDigest": "4840a127a9597731f65d20065d516a1a0bf86c81a02343c0258b7dfe7b600ecc",
+      "stateDigest": "cba16af95380bc0c3479b8bc989aa35f161af7d2f43650790b3624f6722f2c5a"
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 4000,
+      "round": 1,
+      "engine": "array",
+      "elapsedMs": 4301.892583999999,
+      "opsPerSecond": 474.2098878961689,
+      "latencyUs": {
+        "p50": 2018.554000000222,
+        "p95": 2835.86699999978,
+        "p99": 3334.5190000000002,
+        "max": 4695.991000000504
+      },
+      "before": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "after": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "trades": 1020,
+      "inputDigest": "993a403c604e1f1284f5d666aea28a0544fa3c735e23e3c92563654b8ea6f5ac",
+      "stateDigest": "9ca0fe49e4a274cb77ebd536bc9aecc43f648f0663c2651bcd530a8f9f62f54d"
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 4000,
+      "round": 1,
+      "engine": "price-tree",
+      "elapsedMs": 82.60383200000007,
+      "opsPerSecond": 24696.19084983852,
+      "latencyUs": {
+        "p50": 35.68699999993896,
+        "p95": 80.30800000005911,
+        "p99": 121.62599999999202,
+        "max": 1682.1959999999763
+      },
+      "before": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "after": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "trades": 1020,
+      "inputDigest": "993a403c604e1f1284f5d666aea28a0544fa3c735e23e3c92563654b8ea6f5ac",
+      "stateDigest": "9ca0fe49e4a274cb77ebd536bc9aecc43f648f0663c2651bcd530a8f9f62f54d"
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 4000,
+      "round": 2,
+      "engine": "price-tree",
+      "elapsedMs": 67.6234770000001,
+      "opsPerSecond": 30167.03799480759,
+      "latencyUs": {
+        "p50": 33.00000000001546,
+        "p95": 57.143999999993866,
+        "p99": 90.53500000004533,
+        "max": 2460.3230000000167
+      },
+      "before": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "after": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "trades": 1020,
+      "inputDigest": "993a403c604e1f1284f5d666aea28a0544fa3c735e23e3c92563654b8ea6f5ac",
+      "stateDigest": "9ca0fe49e4a274cb77ebd536bc9aecc43f648f0663c2651bcd530a8f9f62f54d"
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 4000,
+      "round": 2,
+      "engine": "array",
+      "elapsedMs": 4115.000856000001,
+      "opsPerSecond": 495.74716297458764,
+      "latencyUs": {
+        "p50": 1940.770999999586,
+        "p95": 2666.3339999995515,
+        "p99": 3224.6930000001157,
+        "max": 4028.6099999993894
+      },
+      "before": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "after": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "trades": 1020,
+      "inputDigest": "993a403c604e1f1284f5d666aea28a0544fa3c735e23e3c92563654b8ea6f5ac",
+      "stateDigest": "9ca0fe49e4a274cb77ebd536bc9aecc43f648f0663c2651bcd530a8f9f62f54d"
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 4000,
+      "round": 3,
+      "engine": "array",
+      "elapsedMs": 4275.982969000001,
+      "opsPerSecond": 477.08328465982714,
+      "latencyUs": {
+        "p50": 2009.1110000012122,
+        "p95": 2844.865999999456,
+        "p99": 3467.1630000011646,
+        "max": 4653.384999999616
+      },
+      "before": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "after": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "trades": 1020,
+      "inputDigest": "993a403c604e1f1284f5d666aea28a0544fa3c735e23e3c92563654b8ea6f5ac",
+      "stateDigest": "9ca0fe49e4a274cb77ebd536bc9aecc43f648f0663c2651bcd530a8f9f62f54d"
+    },
+    {
+      "scenario": "fifo-dense",
+      "depth": 4000,
+      "round": 3,
+      "engine": "price-tree",
+      "elapsedMs": 78.47129700000005,
+      "opsPerSecond": 25996.766690373406,
+      "latencyUs": {
+        "p50": 36.031999999977415,
+        "p95": 74.18299999994815,
+        "p99": 117.6820000000589,
+        "max": 1421.7599999999493
+      },
+      "before": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "after": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 1
+      },
+      "trades": 1020,
+      "inputDigest": "993a403c604e1f1284f5d666aea28a0544fa3c735e23e3c92563654b8ea6f5ac",
+      "stateDigest": "9ca0fe49e4a274cb77ebd536bc9aecc43f648f0663c2651bcd530a8f9f62f54d"
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 100,
+      "round": 1,
+      "engine": "array",
+      "elapsedMs": 168.33630700000003,
+      "opsPerSecond": 12118.59780195843,
+      "latencyUs": {
+        "p50": 59.49899999995978,
+        "p95": 161.90400000004956,
+        "p99": 274.7279999999819,
+        "max": 3430.240000000026
+      },
+      "before": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 100
+      },
+      "after": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 100
+      },
+      "trades": 1920,
+      "inputDigest": "e89f833ff1cf803a6b614d1d76441046c2102941428aa73975c712a332136a9c",
+      "stateDigest": "1f6de568789a5c61842cfa1a925aa64b2a6ac148a1dd6d5633d6feb42532e3ab"
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 100,
+      "round": 1,
+      "engine": "price-tree",
+      "elapsedMs": 65.27661699999999,
+      "opsPerSecond": 31251.619550075648,
+      "latencyUs": {
+        "p50": 14.195000000000846,
+        "p95": 133.85499999998274,
+        "p99": 239.64300000000094,
+        "max": 1354.705000000024
+      },
+      "before": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 100
+      },
+      "after": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 100
+      },
+      "trades": 1920,
+      "inputDigest": "e89f833ff1cf803a6b614d1d76441046c2102941428aa73975c712a332136a9c",
+      "stateDigest": "1f6de568789a5c61842cfa1a925aa64b2a6ac148a1dd6d5633d6feb42532e3ab"
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 100,
+      "round": 2,
+      "engine": "price-tree",
+      "elapsedMs": 60.625181999999995,
+      "opsPerSecond": 33649.383518551746,
+      "latencyUs": {
+        "p50": 13.423999999986336,
+        "p95": 129.63400000001002,
+        "p99": 232.42200000004232,
+        "max": 1503.5010000000284
+      },
+      "before": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 100
+      },
+      "after": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 100
+      },
+      "trades": 1920,
+      "inputDigest": "e89f833ff1cf803a6b614d1d76441046c2102941428aa73975c712a332136a9c",
+      "stateDigest": "1f6de568789a5c61842cfa1a925aa64b2a6ac148a1dd6d5633d6feb42532e3ab"
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 100,
+      "round": 2,
+      "engine": "array",
+      "elapsedMs": 166.030824,
+      "opsPerSecond": 12286.875116634968,
+      "latencyUs": {
+        "p50": 59.144000000003416,
+        "p95": 156.55100000003586,
+        "p99": 272.1290000000067,
+        "max": 3055.1039999999716
+      },
+      "before": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 100
+      },
+      "after": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 100
+      },
+      "trades": 1920,
+      "inputDigest": "e89f833ff1cf803a6b614d1d76441046c2102941428aa73975c712a332136a9c",
+      "stateDigest": "1f6de568789a5c61842cfa1a925aa64b2a6ac148a1dd6d5633d6feb42532e3ab"
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 100,
+      "round": 3,
+      "engine": "array",
+      "elapsedMs": 171.25206300000002,
+      "opsPerSecond": 11912.265255455637,
+      "latencyUs": {
+        "p50": 60.104000000023916,
+        "p95": 154.43799999997054,
+        "p99": 299.16599999995697,
+        "max": 2805.1300000000197
+      },
+      "before": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 100
+      },
+      "after": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 100
+      },
+      "trades": 1920,
+      "inputDigest": "e89f833ff1cf803a6b614d1d76441046c2102941428aa73975c712a332136a9c",
+      "stateDigest": "1f6de568789a5c61842cfa1a925aa64b2a6ac148a1dd6d5633d6feb42532e3ab"
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 100,
+      "round": 3,
+      "engine": "price-tree",
+      "elapsedMs": 80.570671,
+      "opsPerSecond": 25319.387001257564,
+      "latencyUs": {
+        "p50": 19.610000000000127,
+        "p95": 156.18499999999358,
+        "p99": 327.9630000000111,
+        "max": 2048.0849999999577
+      },
+      "before": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 100
+      },
+      "after": {
+        "activeOrders": 100,
+        "buyLevels": 0,
+        "sellLevels": 100
+      },
+      "trades": 1920,
+      "inputDigest": "e89f833ff1cf803a6b614d1d76441046c2102941428aa73975c712a332136a9c",
+      "stateDigest": "1f6de568789a5c61842cfa1a925aa64b2a6ac148a1dd6d5633d6feb42532e3ab"
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 1000,
+      "round": 1,
+      "engine": "array",
+      "elapsedMs": 948.034269,
+      "opsPerSecond": 2151.8209485737484,
+      "latencyUs": {
+        "p50": 395.02999999990607,
+        "p95": 823.372000000063,
+        "p99": 1225.161000000071,
+        "max": 2219.041999999945
+      },
+      "before": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1000
+      },
+      "after": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1000
+      },
+      "trades": 1920,
+      "inputDigest": "599b1962891b8bdf811d6f13556b0b44254c2b48a1727bdf4db9e439f0152693",
+      "stateDigest": "246c6676726e5df901e9c9f368bbd8f4be68fccea1e43c9a7f950eab8e1ade4c"
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 1000,
+      "round": 1,
+      "engine": "price-tree",
+      "elapsedMs": 74.29528899999997,
+      "opsPerSecond": 27457.9993894364,
+      "latencyUs": {
+        "p50": 15.73799999999892,
+        "p95": 189.63500000000977,
+        "p99": 310.41299999998273,
+        "max": 2205.3429999999707
+      },
+      "before": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1000
+      },
+      "after": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1000
+      },
+      "trades": 1920,
+      "inputDigest": "599b1962891b8bdf811d6f13556b0b44254c2b48a1727bdf4db9e439f0152693",
+      "stateDigest": "246c6676726e5df901e9c9f368bbd8f4be68fccea1e43c9a7f950eab8e1ade4c"
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 1000,
+      "round": 2,
+      "engine": "price-tree",
+      "elapsedMs": 76.03028799999998,
+      "opsPerSecond": 26831.41223929075,
+      "latencyUs": {
+        "p50": 16.200999999966825,
+        "p95": 186.88399999996363,
+        "p99": 323.96199999999453,
+        "max": 2099.8010000000136
+      },
+      "before": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1000
+      },
+      "after": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1000
+      },
+      "trades": 1920,
+      "inputDigest": "599b1962891b8bdf811d6f13556b0b44254c2b48a1727bdf4db9e439f0152693",
+      "stateDigest": "246c6676726e5df901e9c9f368bbd8f4be68fccea1e43c9a7f950eab8e1ade4c"
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 1000,
+      "round": 2,
+      "engine": "array",
+      "elapsedMs": 1049.765734,
+      "opsPerSecond": 1943.2907113731337,
+      "latencyUs": {
+        "p50": 403.0450000000201,
+        "p95": 1046.4899999999489,
+        "p99": 1711.900999999898,
+        "max": 3129.0140000000974
+      },
+      "before": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1000
+      },
+      "after": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1000
+      },
+      "trades": 1920,
+      "inputDigest": "599b1962891b8bdf811d6f13556b0b44254c2b48a1727bdf4db9e439f0152693",
+      "stateDigest": "246c6676726e5df901e9c9f368bbd8f4be68fccea1e43c9a7f950eab8e1ade4c"
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 1000,
+      "round": 3,
+      "engine": "array",
+      "elapsedMs": 990.3886950000001,
+      "opsPerSecond": 2059.797340477518,
+      "latencyUs": {
+        "p50": 392.4909999998363,
+        "p95": 973.8620000000537,
+        "p99": 1415.559999999914,
+        "max": 2730.6160000000546
+      },
+      "before": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1000
+      },
+      "after": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1000
+      },
+      "trades": 1920,
+      "inputDigest": "599b1962891b8bdf811d6f13556b0b44254c2b48a1727bdf4db9e439f0152693",
+      "stateDigest": "246c6676726e5df901e9c9f368bbd8f4be68fccea1e43c9a7f950eab8e1ade4c"
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 1000,
+      "round": 3,
+      "engine": "price-tree",
+      "elapsedMs": 66.504887,
+      "opsPerSecond": 30674.43750411906,
+      "latencyUs": {
+        "p50": 14.772999999991043,
+        "p95": 169.26100000000588,
+        "p99": 264.10599999996975,
+        "max": 2068.2150000000092
+      },
+      "before": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1000
+      },
+      "after": {
+        "activeOrders": 1000,
+        "buyLevels": 0,
+        "sellLevels": 1000
+      },
+      "trades": 1920,
+      "inputDigest": "599b1962891b8bdf811d6f13556b0b44254c2b48a1727bdf4db9e439f0152693",
+      "stateDigest": "246c6676726e5df901e9c9f368bbd8f4be68fccea1e43c9a7f950eab8e1ade4c"
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 4000,
+      "round": 1,
+      "engine": "array",
+      "elapsedMs": 3783.846802,
+      "opsPerSecond": 539.1338779682444,
+      "latencyUs": {
+        "p50": 1718.1049999999232,
+        "p95": 2495.597999999518,
+        "p99": 3442.5650000011956,
+        "max": 5300.007999998343
+      },
+      "before": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 4000
+      },
+      "after": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 4000
+      },
+      "trades": 1920,
+      "inputDigest": "3f33856edc28eccbec0e9e6966e57e1b2d27b7bf79c45325011b58367de07a20",
+      "stateDigest": "5dfa8c799aa7a670ee845d61f0fa56b89ee72ad58fd5f87f60dc98654cbb71b9"
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 4000,
+      "round": 1,
+      "engine": "price-tree",
+      "elapsedMs": 94.557301,
+      "opsPerSecond": 21574.219847920576,
+      "latencyUs": {
+        "p50": 18.86500000000524,
+        "p95": 332.24400000000287,
+        "p99": 458.7700000000723,
+        "max": 1458.0369999999903
+      },
+      "before": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 4000
+      },
+      "after": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 4000
+      },
+      "trades": 1920,
+      "inputDigest": "3f33856edc28eccbec0e9e6966e57e1b2d27b7bf79c45325011b58367de07a20",
+      "stateDigest": "5dfa8c799aa7a670ee845d61f0fa56b89ee72ad58fd5f87f60dc98654cbb71b9"
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 4000,
+      "round": 2,
+      "engine": "price-tree",
+      "elapsedMs": 92.84529500000002,
+      "opsPerSecond": 21972.03423178309,
+      "latencyUs": {
+        "p50": 18.940999999927044,
+        "p95": 354.15999999997894,
+        "p99": 436.5109999999959,
+        "max": 1360.8189999999922
+      },
+      "before": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 4000
+      },
+      "after": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 4000
+      },
+      "trades": 1920,
+      "inputDigest": "3f33856edc28eccbec0e9e6966e57e1b2d27b7bf79c45325011b58367de07a20",
+      "stateDigest": "5dfa8c799aa7a670ee845d61f0fa56b89ee72ad58fd5f87f60dc98654cbb71b9"
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 4000,
+      "round": 2,
+      "engine": "array",
+      "elapsedMs": 3825.4286109999994,
+      "opsPerSecond": 533.2735772754957,
+      "latencyUs": {
+        "p50": 1747.298000000228,
+        "p95": 2613.3180000015273,
+        "p99": 3183.9810000001307,
+        "max": 4707.95900000121
+      },
+      "before": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 4000
+      },
+      "after": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 4000
+      },
+      "trades": 1920,
+      "inputDigest": "3f33856edc28eccbec0e9e6966e57e1b2d27b7bf79c45325011b58367de07a20",
+      "stateDigest": "5dfa8c799aa7a670ee845d61f0fa56b89ee72ad58fd5f87f60dc98654cbb71b9"
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 4000,
+      "round": 3,
+      "engine": "array",
+      "elapsedMs": 3776.603406,
+      "opsPerSecond": 540.1679182831303,
+      "latencyUs": {
+        "p50": 1725.2280000011524,
+        "p95": 2473.4499999995023,
+        "p99": 3134.593999999197,
+        "max": 5462.080999999671
+      },
+      "before": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 4000
+      },
+      "after": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 4000
+      },
+      "trades": 1920,
+      "inputDigest": "3f33856edc28eccbec0e9e6966e57e1b2d27b7bf79c45325011b58367de07a20",
+      "stateDigest": "5dfa8c799aa7a670ee845d61f0fa56b89ee72ad58fd5f87f60dc98654cbb71b9"
+    },
+    {
+      "scenario": "sweep-sparse",
+      "depth": 4000,
+      "round": 3,
+      "engine": "price-tree",
+      "elapsedMs": 94.56259499999999,
+      "opsPerSecond": 21573.012035044092,
+      "latencyUs": {
+        "p50": 19.035000000030777,
+        "p95": 353.2700000000091,
+        "p99": 456.68399999999565,
+        "max": 2395.3799999999887
+      },
+      "before": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 4000
+      },
+      "after": {
+        "activeOrders": 4000,
+        "buyLevels": 0,
+        "sellLevels": 4000
+      },
+      "trades": 1920,
+      "inputDigest": "3f33856edc28eccbec0e9e6966e57e1b2d27b7bf79c45325011b58367de07a20",
+      "stateDigest": "5dfa8c799aa7a670ee845d61f0fa56b89ee72ad58fd5f87f60dc98654cbb71b9"
+    }
+  ]
+}

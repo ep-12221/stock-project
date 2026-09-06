@@ -11,7 +11,7 @@ import { createRealtimeService } from './services/realtime.service.js';
 loadEnv({ path: fileURLToPath(new URL('../../../.env', import.meta.url)), quiet: true });
 
 const config = readConfig();
-const store = createMemoryStore();
+const store = createMemoryStore({ matchingEngine: config.MATCHING_ENGINE });
 if (config.ENABLE_DEMO_LIQUIDITY) initializeLiquidity(store);
 const sessions = createSessionService(store, { ttlMs: config.SESSION_TTL_MS });
 const realtime = createRealtimeService({ store, sessions, allowedOrigins: config.ALLOWED_ORIGINS });
@@ -36,7 +36,15 @@ server.on('error', (error) => {
   process.exitCode = 1;
 });
 server.listen(config.PORT, config.HOST, () => {
-  console.info('Stock server listening on http://' + config.HOST + ':' + config.PORT);
+  console.info(
+    'Stock server listening on http://' +
+      config.HOST +
+      ':' +
+      config.PORT +
+      ' (matching: ' +
+      store.matchingEngine +
+      ')',
+  );
 });
 
 let shuttingDown = false;

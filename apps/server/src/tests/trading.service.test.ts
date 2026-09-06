@@ -1,9 +1,11 @@
 import { INITIAL_CASH_CENTS, MAX_ORDER_QUANTITY, MAX_PRICE_CENTS } from '@stock/shared';
 import { describe, expect, it } from 'vitest';
 import { SYSTEM_USER_ID } from '../store/seed.js';
-import { expectInvariants, fixture, SYMBOL, totals } from './trading-fixture.js';
+import { expectInvariants, fixture as createFixture, SYMBOL, totals } from './trading-fixture.js';
 
-describe('limit order matching', () => {
+describe.each(['array', 'price-tree'] as const)('limit order matching (%s)', (matchingEngine) => {
+  const fixture = (options: Parameters<typeof createFixture>[0] = {}) =>
+    createFixture({ ...options, matchingEngine });
   it('rests a non-crossing order, freezes the full limit amount and generates server metadata', () => {
     const { store, submit } = fixture();
     const result = submit('alice', 'BUY', 999, 20);
@@ -94,7 +96,8 @@ describe('limit order matching', () => {
       cashBalanceCents: INITIAL_CASH_CENTS - 149_000,
       frozenCashCents: 51_000,
     });
-    expect(store.orderBooks.get(SYMBOL)).toEqual({
+    const book = store.orderBooks.get(SYMBOL)!;
+    expect({ buyOrderIds: book.buyOrderIds, sellOrderIds: book.sellOrderIds }).toEqual({
       buyOrderIds: [result.order.id],
       sellOrderIds: [],
     });

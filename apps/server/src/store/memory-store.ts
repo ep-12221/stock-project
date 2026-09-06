@@ -11,8 +11,10 @@ import type {
   User,
 } from '../domain/models.js';
 import { seedStore } from './seed.js';
+import { createOrderBook, type MatchingEngine } from '../matching/book-factory.js';
 
 export interface MemoryStore {
+  readonly matchingEngine: MatchingEngine;
   serverEpoch: string;
   now: () => number;
   users: Map<string, User>;
@@ -36,8 +38,12 @@ export interface MemoryStore {
   liquiditySeeded: boolean;
 }
 
-export function createMemoryStore(options: { now?: () => number } = {}): MemoryStore {
+export function createMemoryStore(
+  options: { now?: () => number; matchingEngine?: MatchingEngine } = {},
+): MemoryStore {
+  const matchingEngine = options.matchingEngine ?? 'price-tree';
   const store: MemoryStore = {
+    matchingEngine,
     serverEpoch: randomUUID(),
     now: options.now ?? Date.now,
     users: new Map(),
@@ -50,7 +56,7 @@ export function createMemoryStore(options: { now?: () => number } = {}): MemoryS
     orders: new Map(),
     idempotentOrdersByUser: new Map(),
     orderBooks: new Map(
-      STOCKS.map(({ symbol }) => [symbol, { buyOrderIds: [], sellOrderIds: [] }]),
+      STOCKS.map(({ symbol }) => [symbol, createOrderBook(symbol, matchingEngine)]),
     ),
     ordersByUser: new Map(),
     activeOrdersByUser: new Map(),

@@ -1,4 +1,5 @@
 import { STOCKS } from '@stock/shared';
+import { createOrderBook } from '../matching/book-factory.js';
 import { invariant } from '../matching/checked.js';
 import { createTradingService } from '../services/trading.service.js';
 import type { MemoryStore } from './memory-store.js';
@@ -24,7 +25,10 @@ export function initializeLiquidity(store: MemoryStore): void {
     stocks: new Map(store.stocks),
     orders: new Map(),
     orderBooks: new Map(
-      [...store.orderBooks].map(([symbol]) => [symbol, { buyOrderIds: [], sellOrderIds: [] }]),
+      [...store.orderBooks].map(([symbol]) => [
+        symbol,
+        createOrderBook(symbol, store.matchingEngine),
+      ]),
     ),
     ordersByUser: new Map(),
     activeOrdersByUser: new Map(),

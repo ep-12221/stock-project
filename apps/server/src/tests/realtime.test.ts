@@ -137,7 +137,11 @@ describe('authenticated WebSocket snapshots', () => {
     const bob = await f.connect('bob');
     const carol = await f.connect('carol');
     await f.post('bob', { ...keyedOrder(), side: 'SELL', priceCents: 980 }).expect(201);
-    await vi.waitFor(() => expect(bob.messages).toHaveLength(3));
+    // Delivery on one socket does not imply that the other sockets have drained.
+    await vi.waitFor(() => {
+      expect(bob.messages).toHaveLength(3);
+      for (const peer of [alice, aliceTab, carol]) expect(peer.messages).toHaveLength(2);
+    });
     for (const peer of [alice, aliceTab, bob, carol]) peer.messages.length = 0;
     const response = await f.post('alice', { ...keyedOrder(), quantity: 4 }).expect(201);
     await vi.waitFor(() => {

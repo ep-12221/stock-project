@@ -13,6 +13,7 @@ const configSchema = z.object({
   PORT: z.coerce.number().int().min(1).max(65_535).default(3_000),
   HOST: z.string().min(1).default('127.0.0.1'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  MATCHING_ENGINE: z.enum(['array', 'price-tree']).default('price-tree'),
   SESSION_TTL_MS: z.coerce.number().int().min(1).max(2_592_000_000).default(86_400_000),
   ENABLE_DEMO_LIQUIDITY: z
     .enum(['true', 'false'])

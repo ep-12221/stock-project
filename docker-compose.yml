@@ -9,6 +9,7 @@ services:
       NODE_ENV: production
       HOST: 0.0.0.0
       PORT: '3000'
+      MATCHING_ENGINE: '${MATCHING_ENGINE:-price-tree}'
       ENABLE_DEMO_LIQUIDITY: '${ENABLE_DEMO_LIQUIDITY:-true}'
       SESSION_TTL_MS: '${SESSION_TTL_MS:-86400000}'
       COOKIE_SECURE: '${COOKIE_SECURE:-false}'

@@ -10,9 +10,13 @@ import { readConfig } from '../config.js';
 
 const projectRoot = fileURLToPath(new URL('../../../../', import.meta.url));
 
-it.each([undefined, 'true', 'false'])(
-  'honors ENABLE_DEMO_LIQUIDITY=%s through the actual startup entry',
-  async (flag) => {
+it.each(
+  (['array', 'price-tree'] as const).flatMap((engine) =>
+    [undefined, 'true', 'false'].map((flag) => ({ engine, flag })),
+  ),
+)(
+  'honors MATCHING_ENGINE=$engine and ENABLE_DEMO_LIQUIDITY=$flag through startup',
+  async ({ engine, flag }) => {
     const reservation = createServer();
     reservation.listen(0, '127.0.0.1');
     await once(reservation, 'listening');
@@ -25,6 +29,7 @@ it.each([undefined, 'true', 'false'])(
       PORT: String(port),
       HOST: '127.0.0.1',
       NODE_ENV: 'test',
+      MATCHING_ENGINE: engine,
       ALLOWED_ORIGINS: 'http://localhost:5173',
       COOKIE_SECURE: 'false',
       SESSION_TTL_MS: '60000',
@@ -54,6 +59,7 @@ it.each([undefined, 'true', 'false'])(
           if (output.includes('Stock server listening')) resolve();
         });
       }).finally(() => clearTimeout(startupTimer));
+      expect(output).toContain('(matching: ' + engine + ')');
       const base = 'http://127.0.0.1:' + port;
       const registration = await fetch(base + '/api/auth/register', {
         method: 'POST',
